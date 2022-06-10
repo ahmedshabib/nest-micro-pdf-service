@@ -29,7 +29,14 @@ export class PdfService {
         const page = await browser.newPage()
 
         this.logger.log(`Navigate to ${url}...`)
-        await page.goto(url)
+        await page.goto(url, {
+            waitUntil: [
+              'networkidle0',
+              'load',
+              'domcontentloaded',
+              'networkidle2',
+            ],
+          });
 
         if (options) {
             await page.emulateMedia(options.screen ? 'screen' : 'print')
