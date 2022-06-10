@@ -4,10 +4,10 @@ import { Readable } from "stream";
 
 export interface PDFRenderOptions {
     page: {
-        format?: puppeteer.PDFFormat
+        format?: puppeteer.PaperFormat
         landscape?: boolean
-        height?: puppeteer.LayoutDimension
-        width?: puppeteer.LayoutDimension
+        height?: any
+        width?: any
     },
     screen?: boolean
 }
@@ -19,7 +19,7 @@ export class PdfService {
     /**
      * Render PDF From URL
      * @param url
-     * @param options 
+     * @param options
      */
     async renderPdfFromUrl(url: string, options?: PDFRenderOptions) {
         this.logger.log("Try to open puppeteer browser...")
@@ -31,15 +31,15 @@ export class PdfService {
         this.logger.log(`Navigate to ${url}...`)
         await page.goto(url, {
             waitUntil: [
-              'networkidle0',
-              'load',
-              'domcontentloaded',
-              'networkidle2',
+                'networkidle0',
+                'load',
+                'domcontentloaded',
+                'networkidle2',
             ],
-          });
+        });
 
         if (options) {
-            await page.emulateMedia(options.screen ? 'screen' : 'print')
+            await page.emulateMediaType(options.screen ? 'screen' : 'print')
         }
 
         this.logger.log(`Generate PDF...`)
@@ -50,10 +50,11 @@ export class PdfService {
 
         return pdfContent;
     }
+
     /**
      * Render PDF From HTML
-     * @param html 
-     * @param options 
+     * @param html
+     * @param options
      */
     async renderPdfFromHtml(html: string, options?: PDFRenderOptions) {
         this.logger.log("Try to open puppeteer browser...")
@@ -63,10 +64,10 @@ export class PdfService {
         const page = await browser.newPage()
 
         this.logger.log(`Load HTML...`)
-        await page.setContent(html, { waitUntil: 'domcontentloaded', timeout: 0 })
+        await page.setContent(html, {waitUntil: 'domcontentloaded', timeout: 0})
 
         if (options) {
-            await page.emulateMedia(options.screen ? 'screen' : 'print')
+            await page.emulateMediaType(options.screen ? 'screen' : 'print')
         }
 
         this.logger.log(`Generate PDF...`)
@@ -80,7 +81,7 @@ export class PdfService {
 
     /**
      * Create Readable Stream
-     * @param buffer 
+     * @param buffer
      */
     createReadableStream(buffer: Buffer) {
         const stream: Readable = new Readable();
