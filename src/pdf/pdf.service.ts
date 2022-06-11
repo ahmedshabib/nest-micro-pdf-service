@@ -58,13 +58,20 @@ export class PdfService {
      */
     async renderPdfFromHtml(html: string, options?: PDFRenderOptions) {
         this.logger.log("Try to open puppeteer browser...")
-        const browser = await puppeteer.launch()
+        const browser = await puppeteer.launch({headless: true})
 
         this.logger.log("Try to open browser new page...")
         const page = await browser.newPage()
 
         this.logger.log(`Load HTML...`)
-        await page.setContent(html, {waitUntil: 'domcontentloaded', timeout: 0})
+        page.setJavaScriptEnabled(false)
+        await page.setContent(html, {
+            waitUntil: [
+                'networkidle0',
+                'load',
+                'domcontentloaded'
+            ], timeout: 0
+        })
 
         if (options) {
             await page.emulateMediaType(options.screen ? 'screen' : 'print')
