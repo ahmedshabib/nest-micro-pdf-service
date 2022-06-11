@@ -6,6 +6,7 @@ export interface PDFRenderOptions {
     page: {
         format?: puppeteer.PaperFormat
         landscape?: boolean
+        printBackground?: boolean
         height?: any
         width?: any
     },
