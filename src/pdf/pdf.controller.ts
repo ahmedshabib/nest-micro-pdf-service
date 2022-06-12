@@ -1,5 +1,5 @@
-import { Controller, Post, Body, Header, Res } from "@nestjs/common";
-import { PdfService, PDFRenderOptions } from "./pdf.service";
+import { Body, Controller, Post, Res } from "@nestjs/common";
+import { PDFRenderOptions, PdfService } from "./pdf.service";
 import { Response } from "express";
 
 
@@ -7,9 +7,11 @@ import { Response } from "express";
 export class PdfController {
     constructor(
         private readonly pdfMaker: PdfService
-    ) { }
+    ) {
+    }
+
     /**
-     * Render PDF From Url 
+     * Render PDF From Url
      */
     @Post('render-url')
     async postRenderFromUrl(
@@ -29,8 +31,7 @@ export class PdfController {
                 res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
             }
             stream.pipe(res);
-        }
-        else {
+        } else {
             res.setHeader('Content-Type', 'application/json;charset=UTF-8')
             res.status(200).send({
                 content: buffer.toString('base64'),
@@ -39,6 +40,7 @@ export class PdfController {
             })
         }
     }
+
     /**
      * Render PDF From HTML
      */
@@ -60,8 +62,7 @@ export class PdfController {
                 res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
             }
             stream.pipe(res);
-        }
-        else {
+        } else {
             res.setHeader('Content-Type', 'application/json;charset=UTF-8')
             res.status(200).send({
                 content: buffer.toString('base64'),

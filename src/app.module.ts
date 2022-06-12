@@ -4,14 +4,15 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 
 @Module({
-  imports: [
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'public'),
-      renderPath: '/'
-    }),
-    PdfModule
-  ],
-  controllers: [],
-  providers: [],
+    imports: [
+        ServeStaticModule.forRoot({
+            rootPath: join(__dirname, '..', 'public'),
+            renderPath: '/'
+        }),
+        PdfModule
+    ],
+    controllers: [],
+    providers: [],
 })
-export class AppModule { }
+export class AppModule {
+}
