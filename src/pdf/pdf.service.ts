@@ -1,7 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as puppeteer from 'puppeteer';
 import { Readable } from 'stream';
-import { shell } from 'shelljs';
+// tslint:disable-next-line:no-var-requires
+const shell = require('shelljs');
 
 export interface PDFRenderOptions {
     page: {
@@ -54,6 +55,7 @@ export class PdfService {
             this.logger.log(e);
         } finally {
             await browser.close()
+            this.logger.log(shell)
             shell.exec('bash chromecleanup.sh')
             this.logger.log('chrome cleanup complete');
         }
@@ -94,6 +96,7 @@ export class PdfService {
             this.logger.log(e);
         } finally {
             await browser.close();
+            this.logger.log(shell)
             shell.exec('bash chromecleanup.sh');
             this.logger.log('chrome cleanup complete');
         }
