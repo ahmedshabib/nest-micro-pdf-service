@@ -94,7 +94,7 @@ export class PdfService {
             this.logger.log(e);
         } finally {
             await browser.close();
-            shell.exec('bash chromecleanup.sh')
+            shell.exec('bash chromecleanup.sh');
             this.logger.log('chrome cleanup complete');
         }
     }

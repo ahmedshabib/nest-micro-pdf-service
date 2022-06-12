@@ -1,7 +1,7 @@
 import { Body, Controller, Logger, Post, Request, Response } from '@nestjs/common';
 
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
-import { dateFormat } from 'dateformat';
+import dateFormat = require('dateformat');
 
 import fetch from 'node-fetch';
 
