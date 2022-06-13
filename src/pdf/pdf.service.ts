@@ -55,7 +55,6 @@ export class PdfService {
             this.logger.log(e);
         } finally {
             await browser.close()
-            this.logger.log(shell)
             shell.exec('bash src/chromecleanup.sh');
             this.logger.log('chrome cleanup complete');
         }
@@ -102,7 +101,6 @@ export class PdfService {
             this.logger.log(e);
         } finally {
             await browser.close();
-            this.logger.log(shell)
             shell.exec('bash src/chromecleanup.sh');
             this.logger.log('chrome cleanup complete');
         }
