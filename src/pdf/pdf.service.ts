@@ -86,6 +86,12 @@ export class PdfService {
             if (options) {
                 await page.emulateMediaType(options.screen ? 'screen' : 'print')
             }
+            if(!options.page.width){
+                delete options.page.width
+            }
+            if(!options.page.height){
+                delete options.page.height
+            }
             this.logger.log(options.page)
             this.logger.log(`Generate PDF...`)
             const pdfContent = await page.pdf(options.page)
