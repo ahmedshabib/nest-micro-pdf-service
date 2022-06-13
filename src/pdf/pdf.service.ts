@@ -86,7 +86,7 @@ export class PdfService {
             if (options) {
                 await page.emulateMediaType(options.screen ? 'screen' : 'print')
             }
-
+            this.logger.log(options.page)
             this.logger.log(`Generate PDF...`)
             const pdfContent = await page.pdf(options.page)
 
