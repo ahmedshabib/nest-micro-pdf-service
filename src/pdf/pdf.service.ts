@@ -74,21 +74,28 @@ export class PdfService {
 
             this.logger.log(`Load HTML...`)
             page.setJavaScriptEnabled(false)
-            await page.setContent(html, {
+            await page.goto('data:text/html,' + html, {
                 waitUntil: [
                     'networkidle0',
                     'load',
                     'domcontentloaded'
-                ], timeout: 0
-            })
+                ]
+            });
+            // await page.setContent(html, {
+            //     waitUntil: [
+            //         'networkidle0',
+            //         'load',
+            //         'domcontentloaded'
+            //     ], timeout: 0
+            // })
 
             if (options) {
                 await page.emulateMediaType(options.screen ? 'screen' : 'print')
             }
-            if(!options.page.width){
+            if (!options.page.width) {
                 delete options.page.width
             }
-            if(!options.page.height){
+            if (!options.page.height) {
                 delete options.page.height
             }
             this.logger.log(options.page)
