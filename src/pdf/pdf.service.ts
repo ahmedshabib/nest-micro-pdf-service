@@ -44,6 +44,7 @@ export class PdfService {
             if (options) {
                 await page.emulateMediaType(options.screen ? 'screen' : 'print')
             }
+            await  page.waitForTimeout(200)
 
             this.logger.log(`Generate PDF...`)
             const pdfContent = await page.pdf(options.page)
@@ -74,21 +75,14 @@ export class PdfService {
 
             this.logger.log(`Load HTML...`)
             page.setJavaScriptEnabled(false)
-            await page.goto('data:text/html,' + html, {
+            await page.setContent(html, {
                 waitUntil: [
-                    'networkidle0',
+                    'networkidle2',
                     'load',
                     'domcontentloaded'
-                ]
-            });
-            // await page.setContent(html, {
-            //     waitUntil: [
-            //         'networkidle0',
-            //         'load',
-            //         'domcontentloaded'
-            //     ], timeout: 0
-            // })
-
+                ], timeout: 0
+            })
+            await  page.waitForTimeout(200)
             if (options) {
                 await page.emulateMediaType(options.screen ? 'screen' : 'print')
             }
