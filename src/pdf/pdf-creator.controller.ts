@@ -2,6 +2,7 @@ import { Body, Controller, Logger, Post, Request, Response } from '@nestjs/commo
 
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import moment from 'moment';
+import fetch from 'node-fetch';
 
 const FONT_MAPPING: any = {};
 
@@ -291,6 +292,8 @@ export class PdfCreatorController {
   }
 
   private cleanText(text: string) {
+    // remove x0002 asci character from text
+    text = text.replace(/\u0002/g, '');
     if (typeof text === 'string') {
       let re = /\r\n/gi;
       text = text.replace(re, ' \n');
