@@ -1,7 +1,7 @@
 import { Body, Controller, Logger, Post, Request, Response } from '@nestjs/common';
 
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
-import moment from 'moment';
+import * as moment from "moment";
 import fetch from 'node-fetch';
 
 const FONT_MAPPING: any = {};
@@ -77,7 +77,7 @@ export class PdfCreatorController {
               data[node.key].$date
           ) {
             const date = this.toDateTime(data[node.key].$date / 1000);
-            currentPage.drawText(moment(date).format(node.dateFormat), {
+            currentPage.drawText(moment(date).format('d MMM, yyyy'), {
               x: node.position.x + padding.pad_x,
               y: height - node.position.y - padding.pad_y,
               lineHeight: node.lineHeight || 10,
