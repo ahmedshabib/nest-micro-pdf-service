@@ -77,7 +77,7 @@ export class PdfCreatorController {
               data[node.key].$date
           ) {
             const date = this.toDateTime(data[node.key].$date / 1000);
-            currentPage.drawText(moment(date).format('d MMM, yyyy'), {
+            currentPage.drawText(moment(date).format('D MMM, yyyy'), {
               x: node.position.x + padding.pad_x,
               y: height - node.position.y - padding.pad_y,
               lineHeight: node.lineHeight || 10,
