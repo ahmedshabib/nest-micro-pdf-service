@@ -293,8 +293,8 @@ export class PdfCreatorController {
 
   private cleanText(text: string) {
     // remove x0002 asci character from text
-    text = text.replace(/\u0002/g, '');
     if (typeof text === 'string') {
+      text = text.replace(/\u0002/g, '');
       let re = /\r\n/gi;
       text = text.replace(re, ' \n');
       re = /\n/gi;
