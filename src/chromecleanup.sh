@@ -9,3 +9,4 @@ do
     fi
 done
 
+rm -rf /tmp/*
