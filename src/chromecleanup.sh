@@ -8,3 +8,5 @@ do
         kill $i
     fi
 done
+
+rm -rf /tmp
