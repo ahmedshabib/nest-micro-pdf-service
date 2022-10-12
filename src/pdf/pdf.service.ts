@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as puppeteer from 'puppeteer';
 import { Readable } from 'stream';
+import * as fs from 'fs-extra';
 // tslint:disable-next-line:no-var-requires
 const shell = require('shelljs');
 
@@ -44,7 +45,7 @@ export class PdfService {
             if (options) {
                 await page.emulateMediaType(options.screen ? 'screen' : 'print')
             }
-            await  page.waitForTimeout(200)
+            await page.waitForTimeout(200)
 
             this.logger.log(`Generate PDF...`)
             const pdfContent = await page.pdf(options.page)
@@ -68,7 +69,7 @@ export class PdfService {
      */
     async renderPdfFromHtml(html: string, options?: PDFRenderOptions) {
         this.logger.log('Try to open puppeteer browser...')
-        const browser = await puppeteer.launch({headless: true})
+        const browser = await puppeteer.launch({headless: true, args: ['--disable-web-security', '--disable-dev-profile']})
         try {
             this.logger.log('Try to open browser new page...')
             const page = await browser.newPage()
@@ -82,7 +83,7 @@ export class PdfService {
                     'domcontentloaded'
                 ], timeout: 0
             })
-            await  page.waitForTimeout(200)
+            await page.waitForTimeout(200)
             if (options) {
                 await page.emulateMediaType(options.screen ? 'screen' : 'print')
             }
@@ -101,7 +102,20 @@ export class PdfService {
         } catch (e) {
             this.logger.log(e);
         } finally {
+            let chromeTmpDataDir = null;
+
+            const chromeSpawnArgs = browser.process().spawnargs;
+            for (let i = 0; i < chromeSpawnArgs.length; i++) {
+                if (chromeSpawnArgs[i].indexOf('--user-data-dir=') === 0) {
+                    chromeTmpDataDir = chromeSpawnArgs[i].replace('--user-data-dir=', '');
+                }
+            }
+
             await browser.close();
+
+            if (chromeTmpDataDir !== null) {
+                fs.removeSync(chromeTmpDataDir);
+            }
             shell.exec('bash src/chromecleanup.sh');
             this.logger.log('chrome cleanup complete');
         }

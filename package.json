@@ -25,6 +25,7 @@
     "@nestjs/core": "^8.4.6",
     "@nestjs/platform-express": "^8.4.6",
     "@nestjs/serve-static": "^2.2.2",
+    "fs-extra": "^10.1.0",
     "moment": "^2.29.3",
     "node-fetch": "^2.6.6",
     "nodemon": "^2.0.16",
