@@ -56,7 +56,20 @@ export class PdfService {
         } catch (e) {
             this.logger.log(e);
         } finally {
-            await browser.close()
+            let chromeTmpDataDir = null;
+
+            const chromeSpawnArgs = browser.process().spawnargs;
+            for (let i = 0; i < chromeSpawnArgs.length; i++) {
+                if (chromeSpawnArgs[i].indexOf('--user-data-dir=') === 0) {
+                    chromeTmpDataDir = chromeSpawnArgs[i].replace('--user-data-dir=', '');
+                }
+            }
+
+            await browser.close();
+
+            if (chromeTmpDataDir !== null) {
+                fs.removeSync(chromeTmpDataDir);
+            }
             shell.exec('bash src/chromecleanup.sh');
             this.logger.log('chrome cleanup complete');
         }
