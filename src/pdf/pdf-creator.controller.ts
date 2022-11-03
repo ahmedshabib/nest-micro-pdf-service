@@ -26,20 +26,7 @@ export class PdfCreatorController {
     return t;
   }
 
-  async renderPDF(
-      nodes: any,
-      data: any,
-      pdfDoc: any,
-      height: any,
-      pageNo = 0,
-      padding = {pad_x: 0, pad_y: 0},
-      otherConfigs: any = null,
-      displayCopy: string = 'all',
-  ) {
-    // const notoSansBytes = fs.readFileSync('notosans.ttf');
-    const pages = pdfDoc.getPages();
-    const dataNodes: any = Object.keys(data);
-    const currentPage = pages[pageNo];
+  async writeNodes(currentPage, pdfDoc, pages, nodes, dataNodes, data, height, pageNo, padding, textColor = null) {
     for (const node of nodes) {
       let red = 0;
       let green = 0;
@@ -49,6 +36,12 @@ export class PdfCreatorController {
           if (node.type === 'text') {
             if (node.color) {
               const {r, g, b} = node?.color;
+              red = r;
+              green = g;
+              blue = b;
+            }
+            if (textColor) {
+              const {r, g, b} = textColor;
               red = r;
               green = g;
               blue = b;
@@ -165,7 +158,7 @@ export class PdfCreatorController {
                   data[node.key][j],
                   pdfDoc,
                   height,
-                  Math.floor(j / (node.maxPerPage || 1)),
+                  pageNo + Math.floor(j / (node.maxPerPage || 1)),
                   {
                     pad_x:
                         node.position.pad_x *
@@ -174,6 +167,9 @@ export class PdfCreatorController {
                         node.position.pad_y *
                         Math.floor(j % (node.maxPerPage || 1)),
                   },
+                  null,
+                  null,
+                  textColor
               );
             }
           }
@@ -198,13 +194,30 @@ export class PdfCreatorController {
         this.logger.log(e);
       }
     }
+  }
 
+  async renderPDF(
+      nodes: any,
+      data: any,
+      pdfDoc: any,
+      height: any,
+      pageNo = 0,
+      padding = {pad_x: 0, pad_y: 0},
+      otherConfigs: any = null,
+      displayCopy: string = 'all',
+      textColor: any = null
+  ) {
+    // const notoSansBytes = fs.readFileSync('notosans.ttf');
+    const pages = pdfDoc.getPages();
+    const dataNodes: any = Object.keys(data);
+    const currentPage = pages[pageNo];
+    await this.writeNodes(currentPage, pdfDoc, pages, nodes, dataNodes, data, height, pageNo, padding, textColor);
     if (otherConfigs && otherConfigs.enablePageAppend) {
       const appendPDFData: any = await this.downloadPage(
           otherConfigs.appendPageURL,
       );
       const appendPDFDoc = await PDFDocument.load(appendPDFData);
-      const appenddocpages = appendPDFDoc.getPages();
+      // const appenddocpages = appendPDFDoc.getPages();
       const [donorPage] = await pdfDoc.copyPages(appendPDFDoc, [0]);
       pdfDoc.addPage(donorPage);
     }
@@ -250,6 +263,28 @@ export class PdfCreatorController {
         }
       }
     }
+    if (otherConfigs && otherConfigs.enableContentDuplicationInPages) {
+      console.log("here")
+      // tslint:disable-next-line:no-shadowed-variable
+      const pages = pdfDoc.getPages();
+      let copyIndex = 0;
+      for (let i = 0; i < otherConfigs.pages.length; i++) {
+        copyIndex = i;
+        await this.writeNodes(
+            pages[otherConfigs.pages[i].pageNo - 1],
+            pdfDoc,
+            pages,
+            nodes,
+            dataNodes,
+            data,
+            height,
+            otherConfigs.pages[i].pageNo - 1,
+            padding,
+            otherConfigs.pages[i].textColor
+        );
+      }
+    }
+
     return Promise.resolve();
   }
 
