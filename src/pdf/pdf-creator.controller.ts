@@ -26,7 +26,7 @@ export class PdfCreatorController {
     return t;
   }
 
-  async writeNodes(currentPage, pdfDoc, pages, nodes, dataNodes, data, height, pageNo, padding, textColor = null) {
+  async writeNodes(currentPage, pdfDoc, pages, nodes, dataNodes, data, height, pageNo, padding, textColor = null, otherConfigs = null) {
     for (const node of nodes) {
       let red = 0;
       let green = 0;
@@ -46,22 +46,22 @@ export class PdfCreatorController {
               green = g;
               blue = b;
             }
-            currentPage.drawText(this.cleanText(data[node.key]) + '', {
+            currentPage.drawText(this.cleanText(data[node.key], otherConfigs) + '', {
               x: node.position.x + padding.pad_x,
               y: height - node.position.y - padding.pad_y,
               lineHeight: node.lineHeight || 10,
               size: node.fontSize || 10,
               color: rgb(red, green, blue),
-              font: FONT_MAPPING[node.fontFamily] || FONT_MAPPING.helvetica,
+              font: FONT_MAPPING[node.fontFamily] || FONT_MAPPING.courier,
               maxWidth: node.width,
             });
           } else if (node.type === 'bar_code') {
-            currentPage.drawText(this.cleanText(data[node.key]) + '', {
+            currentPage.drawText(this.cleanText(data[node.key], otherConfigs) + '', {
               x: node.position.x + padding.pad_x,
               y: height - node.position.y - padding.pad_y,
               lineHeight: node.lineHeight || 10,
               size: node.fontSize || 10,
-              font: FONT_MAPPING[node.fontFamily] || FONT_MAPPING.helvetica,
+              font: FONT_MAPPING[node.fontFamily] || FONT_MAPPING.courier,
               maxWidth: node.width,
             });
           } else if (
@@ -75,7 +75,7 @@ export class PdfCreatorController {
               y: height - node.position.y - padding.pad_y,
               lineHeight: node.lineHeight || 10,
               size: node.fontSize || 10,
-              font: FONT_MAPPING[node.fontFamily] || FONT_MAPPING.helvetica,
+              font: FONT_MAPPING[node.fontFamily] || FONT_MAPPING.courier,
               maxWidth: node.width,
             });
           } else if (node.type === 'image') {
@@ -107,14 +107,14 @@ export class PdfCreatorController {
             }
             node.positions.forEach((position: any) => {
               if (data[node.key]) {
-                pages[pageNo].drawText(this.cleanText(data[node.key]) + '', {
+                pages[pageNo].drawText(this.cleanText(data[node.key], otherConfigs) + '', {
                   x: position.x + padding.pad_x,
                   y: height - position.y - padding.pad_y,
                   color: rgb(red, green, blue),
                   size: node.fontSize || 10,
                   lineHeight: node.lineHeight || 10,
                   font:
-                      FONT_MAPPING[node.fontFamily] || FONT_MAPPING.helvetica,
+                      FONT_MAPPING[node.fontFamily] || FONT_MAPPING.courier,
                   maxWidth: node.width,
                 });
               }
@@ -131,14 +131,14 @@ export class PdfCreatorController {
             // tslint:disable-next-line:prefer-for-of
             for (let i = 0; i < allPages.length; i += 1) {
               allPages[i].drawText(
-                  this.cleanText(lines.slice(0, node.maxLines).join('\n')) + '',
+                  this.cleanText(lines.slice(0, node.maxLines).join('\n'), otherConfigs) + '',
                   {
                     x: node.position.x,
                     y: height - node.position.y,
                     lineHeight: node.lineHeight || 10,
                     size: node.fontSize || 10,
                     font:
-                        FONT_MAPPING[node.fontFamily] || FONT_MAPPING.helvetica,
+                        FONT_MAPPING[node.fontFamily] || FONT_MAPPING.courier,
                     maxWidth: node.width,
                   },
               );
@@ -180,13 +180,13 @@ export class PdfCreatorController {
             green = g;
             blue = b;
           }
-          currentPage.drawText(this.cleanText(node.value) + '', {
+          currentPage.drawText(this.cleanText(node.value, otherConfigs) + '', {
             x: node.position.x + padding.pad_x,
             y: height - node.position.y - padding.pad_y,
             lineHeight: node.lineHeight || 10,
             color: rgb(red, green, blue),
             size: node.fontSize || 10,
-            font: FONT_MAPPING[node.fontFamily] || FONT_MAPPING.helvetica,
+            font: FONT_MAPPING[node.fontFamily] || FONT_MAPPING.courier,
             maxWidth: node.width,
           });
         }
@@ -211,7 +211,7 @@ export class PdfCreatorController {
     const pages = pdfDoc.getPages();
     const dataNodes: any = Object.keys(data);
     const currentPage = pages[pageNo];
-    await this.writeNodes(currentPage, pdfDoc, pages, nodes, dataNodes, data, height, pageNo, padding, textColor);
+    await this.writeNodes(currentPage, pdfDoc, pages, nodes, dataNodes, data, height, pageNo, padding, textColor, otherConfigs);
     if (otherConfigs && otherConfigs.enablePageAppend) {
       const appendPDFData: any = await this.downloadPage(
           otherConfigs.appendPageURL,
@@ -236,7 +236,7 @@ export class PdfCreatorController {
                 lineHeight: node.lineHeight || 10,
                 size: node.fontSize || 10,
                 font:
-                    FONT_MAPPING[node.fontFamily] || FONT_MAPPING.helvetica,
+                    FONT_MAPPING[node.fontFamily] || FONT_MAPPING.courier,
                 maxWidth: node.width,
               });
             }
@@ -257,14 +257,13 @@ export class PdfCreatorController {
             y: height - node.position.y - padding.pad_y,
             lineHeight: node.lineHeight || 10,
             size: node.fontSize || 10,
-            font: FONT_MAPPING[node.fontFamily] || FONT_MAPPING.helvetica,
+            font: FONT_MAPPING[node.fontFamily] || FONT_MAPPING.courier,
             maxWidth: node.width,
           });
         }
       }
     }
     if (otherConfigs && otherConfigs.enableContentDuplicationInPages) {
-      console.log("here")
       // tslint:disable-next-line:no-shadowed-variable
       const pages = pdfDoc.getPages();
       let copyIndex = 0;
@@ -280,7 +279,8 @@ export class PdfCreatorController {
             height,
             otherConfigs.pages[i].pageNo - 1,
             padding,
-            otherConfigs.pages[i].textColor
+            otherConfigs.pages[i].textColor,
+            otherConfigs
         );
       }
     }
@@ -293,8 +293,11 @@ export class PdfCreatorController {
     const pdfData: any = await this.downloadPage(config.sourcePDFUrl);
     const pdfDoc = await PDFDocument.load(pdfData);
     const courierFont = await pdfDoc.embedFont(StandardFonts.Courier);
+    const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRoman);
     FONT_MAPPING.courier = courierFont;
-    FONT_MAPPING.helvetica = courierFont;
+    FONT_MAPPING.helvetica = helveticaFont;
+    FONT_MAPPING.timesRoman = timesRomanFont;
     const pages = pdfDoc.getPages();
     const {height} = pages[0].getSize();
     const newPdfDoc = await this.renderPDF(
@@ -326,7 +329,10 @@ export class PdfCreatorController {
     this.logger.log('Response Done');
   }
 
-  private cleanText(text: string) {
+  private cleanText(text: string, otherConfigs: any = null) {
+    if (otherConfigs?.textUpperCase) {
+      text = text.toUpperCase();
+    }
     // remove x0002 asci character from text
     if (typeof text === 'string') {
       text = text.replace(/\u0002/g, '');
