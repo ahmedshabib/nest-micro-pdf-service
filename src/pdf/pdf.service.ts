@@ -28,59 +28,59 @@ export class PdfService {
     async renderPdfFromUrl(url: string, options?: PDFRenderOptions) {
         this.logger.log('Try to open puppeteer browser...')
         const browser = await puppeteer.launch({headless: true, args: ['--disable-web-security', '--disable-dev-profile']})
-        // try {
+        try {
 
-        this.logger.log('Try to open browser new page...');
-        const page = await browser.newPage();
+            this.logger.log('Try to open browser new page...');
+            const page = await browser.newPage();
 
-        this.logger.log(`Navigate to ${url}...`);
-        await page.goto(url, {
-            waitUntil: [
-                'networkidle0',
-                'load',
-                'domcontentloaded',
-                'networkidle2',
-            ],
-        });
-        if (!options) {
-            options = {
-                page: {
-                    printBackground: true,
-                    landscape: true
-                },
-                screen: false
+            this.logger.log(`Navigate to ${url}...`);
+            await page.goto(url, {
+                waitUntil: [
+                    'networkidle0',
+                    'load',
+                    'domcontentloaded',
+                    'networkidle2',
+                ],
+            });
+            if (!options) {
+                options = {
+                    page: {
+                        printBackground: true,
+                        landscape: true
+                    },
+                    screen: false
+                }
             }
+            await page.emulateMediaType(options.screen ? 'screen' : 'print')
+            await page.waitForTimeout(200)
+
+            this.logger.log(`Generate PDF...`);
+            const pdfContent = await page.pdf(options.page);
+
+            this.logger.log(`Close Browser...`);
+            await browser.close();
+
+            return pdfContent;
+        } catch (e) {
+            this.logger.log(e);
+        } finally {
+            let chromeTmpDataDir = null;
+
+            const chromeSpawnArgs = browser.process().spawnargs;
+            for (let i = 0; i < chromeSpawnArgs.length; i++) {
+                if (chromeSpawnArgs[i].indexOf('--user-data-dir=') === 0) {
+                    chromeTmpDataDir = chromeSpawnArgs[i].replace('--user-data-dir=', '');
+                }
+            }
+
+            await browser.close();
+
+            if (chromeTmpDataDir !== null) {
+                fs.removeSync(chromeTmpDataDir);
+            }
+            shell.exec('bash src/chromecleanup.sh');
+            this.logger.log('chrome cleanup complete');
         }
-        await page.emulateMediaType(options.screen ? 'screen' : 'print')
-        await page.waitForTimeout(200)
-
-        this.logger.log(`Generate PDF...`);
-        const pdfContent = await page.pdf(options.page);
-
-        this.logger.log(`Close Browser...`);
-        await browser.close();
-
-        return pdfContent;
-        // } catch (e) {
-        //     this.logger.log(e);
-        // } finally {
-        //     let chromeTmpDataDir = null;
-        //
-        //     const chromeSpawnArgs = browser.process().spawnargs;
-        //     for (let i = 0; i < chromeSpawnArgs.length; i++) {
-        //         if (chromeSpawnArgs[i].indexOf('--user-data-dir=') === 0) {
-        //             chromeTmpDataDir = chromeSpawnArgs[i].replace('--user-data-dir=', '');
-        //         }
-        //     }
-        //
-        //     await browser.close();
-        //
-        //     if (chromeTmpDataDir !== null) {
-        //         fs.removeSync(chromeTmpDataDir);
-        //     }
-        //     shell.exec('bash src/chromecleanup.sh');
-        //     this.logger.log('chrome cleanup complete');
-        // }
     }
 
     /**
