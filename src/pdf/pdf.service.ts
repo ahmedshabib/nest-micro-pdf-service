@@ -27,7 +27,11 @@ export class PdfService {
      */
     async renderPdfFromUrl(url: string, options?: PDFRenderOptions) {
         this.logger.log('Try to open puppeteer browser...')
-        const browser = await puppeteer.launch({headless: true, args: ['--disable-web-security', '--disable-dev-profile']})
+        const browser = await puppeteer.launch({
+            headless: true,
+            args: ['--disable-web-security', '--disable-dev-profile'],
+            executablePath: 'google-chrome-stable'
+        })
         try {
 
             this.logger.log('Try to open browser new page...');
@@ -90,7 +94,12 @@ export class PdfService {
      */
     async renderPdfFromHtml(html: string, options?: PDFRenderOptions) {
         this.logger.log('Try to open puppeteer browser...')
-        const browser = await puppeteer.launch({headless: true, args: ['--disable-web-security', '--disable-dev-profile']})
+
+        const browser = await puppeteer.launch({
+            headless: true,
+            args: ['--disable-web-security', '--disable-dev-profile'],
+            executablePath: 'google-chrome-stable'
+        })
         try {
             this.logger.log('Try to open browser new page...')
             const page = await browser.newPage()
