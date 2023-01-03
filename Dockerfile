@@ -12,5 +12,6 @@ RUN apt-get update \
       --no-install-recommends \
     && rm -rf /var/lib/apt/lists/* \
 RUN npm install
+RUN npm install -g @nestjs/cli
 RUN nest build
 CMD exec npm run start:prod
