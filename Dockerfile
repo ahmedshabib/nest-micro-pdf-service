@@ -1,4 +1,6 @@
 FROM node:14-slim
+COPY . /app
+WORKDIR /app
 
 # Install latest chrome dev package and fonts to support major charsets (Chinese, Japanese, Arabic, Hebrew, Thai and a few others)
 # Note: this installs the necessary libs to make the bundled version of Chromium that Puppeteer
@@ -11,8 +13,6 @@ RUN apt-get update \
     && apt-get install -y google-chrome-stable fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf libxss1 \
       --no-install-recommends \
     && rm -rf /var/lib/apt/lists/* \
-COPY . /app
-WORKDIR /app
 RUN npm install
 RUN npm install -g @nestjs/cli
 RUN npm run build
