@@ -40,6 +40,7 @@ export class PdfService {
             this.logger.log(`Navigate to ${url}...`);
             await page.goto(url, {
                 waitUntil: [
+                    'networkidle0',
                     'networkidle2',
                     'load',
                     'domcontentloaded'
@@ -57,7 +58,7 @@ export class PdfService {
                 }
             }
             await page.emulateMediaType(options.screen ? 'screen' : 'print')
-            await page.waitForTimeout(10000)
+            await page.waitForTimeout(2000)
             const element = await page.evaluate(() => JSON.parse(document.getElementById('print-meta')?.innerHTML || '{}'));
             if (element.width && element.height) {
                 options.page.width = element.width || '1000px';
