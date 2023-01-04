@@ -55,6 +55,9 @@ export class PdfService {
             }
             await page.emulateMediaType(options.screen ? 'screen' : 'print')
             await page.waitForTimeout(1000)
+            const element = await page.evaluate(() => JSON.parse(document.getElementById('print-meta').innerHTML));
+            options.page.width = element.width;
+            options.page.height = element.height;
 
             this.logger.log(`Generate PDF...`);
             const pdfContent = await page.pdf(options.page);
