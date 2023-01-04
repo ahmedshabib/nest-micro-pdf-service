@@ -52,6 +52,7 @@ export class PdfService {
                 options.page.height = element.height || '1200px';
             }
 
+
             this.logger.log(`Generate PDF...`)
             const pdfContent = await page.pdf(options.page)
 
