@@ -40,10 +40,9 @@ export class PdfService {
             this.logger.log(`Navigate to ${url}...`);
             await page.goto(url, {
                 waitUntil: [
-                    'networkidle0',
-                    'load',
-                    'domcontentloaded',
                     'networkidle2',
+                    'load',
+                    'domcontentloaded'
                 ],
             });
             if (!options) {
@@ -56,7 +55,7 @@ export class PdfService {
                 }
             }
             await page.emulateMediaType(options.screen ? 'screen' : 'print')
-            await page.waitForTimeout(200)
+            await page.waitForTimeout(1000)
 
             this.logger.log(`Generate PDF...`);
             const pdfContent = await page.pdf(options.page);
