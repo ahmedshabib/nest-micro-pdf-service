@@ -12,6 +12,7 @@ export interface PDFRenderOptions {
         printBackground?: boolean
         height?: any
         width?: any
+        timeout?: number
     },
     screen?: boolean
 }
@@ -43,21 +44,25 @@ export class PdfService {
                     'load',
                     'domcontentloaded'
                 ],
+                timeout: 60000
             });
             if (!options) {
                 options = {
                     page: {
                         printBackground: true,
-                        landscape: true
+                        landscape: true,
+                        timeout: 120000
                     },
-                    screen: false
+                    screen: false,
                 }
             }
             await page.emulateMediaType(options.screen ? 'screen' : 'print')
-            await page.waitForTimeout(1000)
-            const element = await page.evaluate(() => JSON.parse(document.getElementById('print-meta').innerHTML));
-            options.page.width = element.width;
-            options.page.height = element.height;
+            await page.waitForTimeout(10000)
+            const element = await page.evaluate(() => JSON.parse(document.getElementById('print-meta')?.innerHTML || '{}'));
+            if (element.width && element.height) {
+                options.page.width = element.width || '1000px';
+                options.page.height = element.height || '1200px';
+            }
 
             this.logger.log(`Generate PDF...`);
             const pdfContent = await page.pdf(options.page);
