@@ -30,7 +30,7 @@ export class PdfService {
         this.logger.log('Try to open puppeteer browser...')
         const browser = await puppeteer.launch({
             headless: true,
-            args: [],
+            args: ['--no-sandbox'],
         })
         try {
 
@@ -104,7 +104,7 @@ export class PdfService {
 
         const browser = await puppeteer.launch({
             headless: true,
-            args: []
+            args: ['--no-sandbox']
         })
         try {
             this.logger.log('Try to open browser new page...')
