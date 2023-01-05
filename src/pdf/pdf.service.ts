@@ -12,6 +12,7 @@ export interface PDFRenderOptions {
         printBackground?: boolean
         height?: any
         width?: any
+        timeout?: number
     },
     screen?: boolean
 }
@@ -40,10 +41,17 @@ export class PdfService {
                     'domcontentloaded',
                     'networkidle2',
                 ],
+                timeout: 120000
             });
 
             if (options) {
                 await page.emulateMediaType(options.screen ? 'screen' : 'print')
+            } else {
+                options = {
+                    'page': {
+                        'timeout': 120000
+                    }
+                }
             }
             await page.waitForTimeout(200)
             const element = await page.evaluate(() => JSON.parse(document.getElementById('print-meta')?.innerHTML || '{}'));
