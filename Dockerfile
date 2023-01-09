@@ -1,4 +1,4 @@
-FROM bloodred17/track-cargo
+FROM node:16
 
 MAINTAINER Ahmed Shabib "ahmed@shipthis.co"
 COPY . /app
