@@ -18,4 +18,4 @@ RUN npm install  --legacy-peer-deps
 RUN npm install -g @nestjs/cli
 RUN npm run build
 RUN export NODE_TLS_REJECT_UNAUTHORIZED=0
-CMD dist/main.js
+CMD node dist/main.js
