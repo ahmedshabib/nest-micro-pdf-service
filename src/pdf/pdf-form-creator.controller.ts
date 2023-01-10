@@ -43,62 +43,67 @@ export class PdfFormCreatorController {
         let maxLineLimit = 1000;
         let maxField: any = null;
         let maxFieldPosition = null;
+        // tslint:disable-next-line:prefer-for-of
         for (let i = 0; i < dataNodes.length; i++) {
-            if (typeof fields[dataNodes[i]] === 'string') {
-                const field = form.getTextField(dataNodes[i]);
-                const widget = field.acroField.getWidgets()[0];
-                const appearance = widget.getDefaultAppearance().split(' ');
-                const position = widget.getRectangle();
-                position.fontSize = appearance[1]
-                position.fontFamily = appearance[0]
-                pages[pageNo].drawText(
-                    this.cleanText(fields[dataNodes[i]], otherConfigs) + '',
-                    {
-                        x: position.x + 1,
-                        y: position.y + position.height - 10,
-                        // tslint:disable-next-line:radix
-                        lineHeight: parseInt(position.fontSize) + 1,
-                        size: parseInt(position.fontSize),
-                        font: FONT_MAPPING.courier,
-                        maxWidth: position.width,
-                    },
-                );
-                // field.setText(fields[dataNodes[i]]);
-            } else if (typeof fields[dataNodes[i]] === 'object') {
-                const field = form.getTextField(dataNodes[i]);
-                maxLineLength = fields[dataNodes[i]].value.split('\n').length;
-                maxLineLimit = fields[dataNodes[i]].max_lines;
-                if (maxLineLength > fields[dataNodes[i]].max_lines) {
-                    enableMaxLine = true;
-                    maxLineValue = fields[dataNodes[i]].value;
-                    maxLineKey = dataNodes[i];
-                    maxField = field;
-                    const widget = maxField.acroField.getWidgets()[0];
-                    maxFieldPosition = widget.getRectangle()
-                    const appearance = widget.getDefaultAppearance().split(' ');
-                    maxFieldPosition.fontSize = appearance[1]
-                    maxFieldPosition.fontFamily = appearance[0]
-
-                } else {
+            try {
+                if (typeof fields[dataNodes[i]] === 'string') {
+                    const field = form.getTextField(dataNodes[i]);
                     const widget = field.acroField.getWidgets()[0];
                     const appearance = widget.getDefaultAppearance().split(' ');
                     const position = widget.getRectangle();
                     position.fontSize = appearance[1]
                     position.fontFamily = appearance[0]
                     pages[pageNo].drawText(
-                        this.cleanText(fields[dataNodes[i]].value, otherConfigs) + '',
+                        this.cleanText(fields[dataNodes[i]], otherConfigs) + '',
                         {
                             x: position.x + 1,
                             y: position.y + position.height - 10,
                             // tslint:disable-next-line:radix
                             lineHeight: parseInt(position.fontSize) + 1,
-                            // tslint:disable-next-line:radix
                             size: parseInt(position.fontSize),
                             font: FONT_MAPPING.courier,
-                            maxWidth: position.width,
+                            maxWidth: position.width + 10,
                         },
                     );
+                    // field.setText(fields[dataNodes[i]]);
+                } else if (typeof fields[dataNodes[i]] === 'object') {
+                    const field = form.getTextField(dataNodes[i]);
+                    maxLineLength = fields[dataNodes[i]].value.split('\n').length;
+                    maxLineLimit = fields[dataNodes[i]].max_lines;
+                    if (maxLineLength > fields[dataNodes[i]].max_lines) {
+                        enableMaxLine = true;
+                        maxLineValue = fields[dataNodes[i]].value;
+                        maxLineKey = dataNodes[i];
+                        maxField = field;
+                        const widget = maxField.acroField.getWidgets()[0];
+                        maxFieldPosition = widget.getRectangle()
+                        const appearance = widget.getDefaultAppearance().split(' ');
+                        maxFieldPosition.fontSize = appearance[1]
+                        maxFieldPosition.fontFamily = appearance[0]
+
+                    } else {
+                        const widget = field.acroField.getWidgets()[0];
+                        const appearance = widget.getDefaultAppearance().split(' ');
+                        const position = widget.getRectangle();
+                        position.fontSize = appearance[1]
+                        position.fontFamily = appearance[0]
+                        pages[pageNo].drawText(
+                            this.cleanText(fields[dataNodes[i]].value, otherConfigs) + '',
+                            {
+                                x: position.x + 1,
+                                y: position.y + position.height - 10,
+                                // tslint:disable-next-line:radix
+                                lineHeight: parseInt(position.fontSize) + 1,
+                                // tslint:disable-next-line:radix
+                                size: parseInt(position.fontSize),
+                                font: FONT_MAPPING.courier,
+                                maxWidth: position.width + 10,
+                            },
+                        );
+                    }
                 }
+            } catch (e) {
+                console.log(e);
             }
         }
         form.flatten();
