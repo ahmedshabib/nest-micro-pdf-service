@@ -86,7 +86,7 @@ export class PdfFormCreatorController {
                     position.fontSize = appearance[1]
                     position.fontFamily = appearance[0]
                     pages[pageNo].drawText(
-                        this.cleanText(fields[dataNodes[i]], otherConfigs) + '',
+                        this.cleanText(fields[dataNodes[i]].value, otherConfigs) + '',
                         {
                             x: position.x + 1,
                             y: position.y + position.height - 10,
