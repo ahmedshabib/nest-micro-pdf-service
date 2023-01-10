@@ -80,8 +80,24 @@ export class PdfFormCreatorController {
                     maxFieldPosition.fontFamily = appearance[0]
 
                 } else {
-                    field.setText(fields[dataNodes[i]].value);
-
+                    const widget = field.acroField.getWidgets()[0];
+                    const appearance = widget.getDefaultAppearance().split(' ');
+                    const position = widget.getRectangle();
+                    position.fontSize = appearance[1]
+                    position.fontFamily = appearance[0]
+                    pages[pageNo].drawText(
+                        this.cleanText(fields[dataNodes[i]], otherConfigs) + '',
+                        {
+                            x: position.x + 1,
+                            y: position.y + position.height - 10,
+                            // tslint:disable-next-line:radix
+                            lineHeight: parseInt(position.fontSize) + 1,
+                            // tslint:disable-next-line:radix
+                            size: parseInt(position.fontSize),
+                            font: FONT_MAPPING.courier,
+                            maxWidth: position.width,
+                        },
+                    );
                 }
             }
         }
