@@ -98,7 +98,29 @@ export class PdfCreatorController {
               width: node.width,
               height: node.height,
             });
-          } else if (node.type === 'multiple') {
+          } 
+          else if (node.type === 'image_url') {
+            const imageBytes = await fetch(data[node.url]).then((res) =>
+                res.arrayBuffer(),
+            );
+            let img = null;
+            try {
+              img = await pdfDoc.embedPng(imageBytes);
+            } catch (e) {
+              try {
+                img = await pdfDoc.embedJpg(imageBytes);
+              } catch (e) {
+                this.logger.log(e);
+              }
+            }
+            currentPage.drawImage(img, {
+              x: node.position.x + padding.pad_x,
+              y: height - node.position.y - padding.pad_y,
+              width: node.width,
+              height: node.height,
+            });
+          }
+          else if (node.type === 'multiple') {
             if (node.color) {
               const {r, g, b} = node?.color;
               red = r;
