@@ -46,7 +46,7 @@ export class PdfCreatorController {
               green = g;
               blue = b;
             }
-            currentPage.drawText(this.cleanText(data[node.key] || node.value, otherConfigs) + '', {
+            currentPage.drawText(this.cleanText(data[node.key] || node.value ||'', otherConfigs) + '', {
               x: node.position.x + padding.pad_x,
               y: height - node.position.y - padding.pad_y,
               lineHeight: node.lineHeight || 10,
@@ -56,7 +56,7 @@ export class PdfCreatorController {
               maxWidth: node.width,
             });
           } else if (node.type === 'bar_code') {
-            currentPage.drawText(this.cleanText(data[node.key] || node.value, otherConfigs) + '', {
+            currentPage.drawText(this.cleanText(data[node.key] || node.value ||'', otherConfigs) + '', {
               x: node.position.x + padding.pad_x,
               y: height - node.position.y - padding.pad_y,
               lineHeight: node.lineHeight || 10,
@@ -79,7 +79,7 @@ export class PdfCreatorController {
               maxWidth: node.width,
             });
           } else if (node.type === 'image') {
-            const imageBytes = await fetch(data[node.key] || node.value).then((res) =>
+            const imageBytes = await fetch(data[node.key] || node.value ||'').then((res) =>
                 res.arrayBuffer(),
             );
             let img = null;
@@ -107,7 +107,7 @@ export class PdfCreatorController {
             }
             node.positions.forEach((position: any) => {
               if (data[node.key]) {
-                pages[pageNo].drawText(this.cleanText(data[node.key] || node.value, otherConfigs) + '', {
+                pages[pageNo].drawText(this.cleanText(data[node.key] || node.value ||'', otherConfigs) + '', {
                   x: position.x + padding.pad_x,
                   y: height - position.y - padding.pad_y,
                   color: rgb(red, green, blue),
