@@ -173,7 +173,23 @@ export class PdfCreatorController {
               );
             }
           }
+        } else if (node.value) {
+        if (node.color) {
+          const {r, g, b} = node?.color;
+          red = r;
+          green = g;
+          blue = b;
         }
+        currentPage.drawText(this.cleanText(node.value, otherConfigs) + '', {
+          x: node.position.x + padding.pad_x,
+          y: height - node.position.y - padding.pad_y,
+          lineHeight: node.lineHeight || 10,
+          color: rgb(red, green, blue),
+          size: node.fontSize || 10,
+          font: FONT_MAPPING[node.fontFamily] || FONT_MAPPING.courier,
+          maxWidth: node.width,
+        });
+      }
       } catch (e) {
         this.logger.log(e);
       }
