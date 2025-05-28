@@ -10,7 +10,8 @@ RUN  apt-get update \
       --no-install-recommends \
      && rm -rf /var/lib/apt/lists/* \
      && wget --quiet https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh -O /usr/sbin/wait-for-it.sh \
-     && chmod +x /usr/sbin/wait-for-it.sh
+     && chmod +x /usr/sbin/wait-for-it.sh \
+RUN apt-get install fonts-noto-cjk fonts-wqy-zenhei fonts-wqy-microhei -y
 COPY . /app
 WORKDIR /app
 # RUN rm -rf package-lock.json
